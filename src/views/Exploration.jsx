@@ -1,101 +1,98 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient'; // Ensure this path is correct
 
-const Exploration = ({ userData, onStartExploration, onInstantFinish, onClaimRewards }) => {
-  const [view, setView] = useState('merc-select');
-  const [selectedMerc, setSelectedMerc] = useState(null);
-  const [timeLeft, setTimeLeft] = useState('');
-  const [isComplete, setIsComplete] = useState(false);
+const Exploration = ({ userData, onStart, onClaim }) => {
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [showLogs, setShowLogs] = useState(false);
+  const [logs, setLogs] = useState([]);
 
-  // --- TIMER & AUTO-REDIRECT LOGIC ---
   useEffect(() => {
-    let interval;
-    if (userData?.isExploring && userData?.explorationEndsAt) {
-      setView('timer');
-      interval = setInterval(() => {
-        const now = new Date().getTime();
-        const end = new Date(userData.explorationEndsAt).getTime();
-        const distance = end - now;
+    const timer = setInterval(() => {
+      if (userData?.exploration_end_time) {
+        const remaining = Math.max(0, new Date(userData.exploration_end_time) - new Date());
+        setTimeLeft(Math.floor(remaining / 1000));
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [userData?.exploration_end_time]);
 
-        if (distance <= 0) {
-          clearInterval(interval);
-          setTimeLeft("00:00");
-          setIsComplete(true);
-        } else {
-          setIsComplete(false);
-          const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          const s = Math.floor((distance % (1000 * 60)) / 1000);
-          setTimeLeft(`${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
-        }
-      }, 1000);
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  const fetchLogs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('exploration_logs')
+        .select('item_name, created_at')
+        .eq('user_id', userData.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      setLogs(data || []);
+    } catch (err) {
+      console.error("Error fetching logs:", err.message);
     }
-    return () => clearInterval(interval);
-  }, [userData]);
+  };
 
-  // --- VIEW: MERC SELECTION ---
-  if (view === 'merc-select') {
-    const idleMercs = userData?.mercenaries?.filter(m => m.status === 'idle') || [];
-    return (
-      <div className="arena-content-view">
-        <h2 className="arena-title">EXPLORATION</h2>
-        <div className="merc-selection-list">
-          {idleMercs.map(merc => (
-            <button key={merc.id} className="arena-menu-btn" onClick={() => {
-              setSelectedMerc(merc);
-              setView('ticket-select');
-            }}>
-              {merc.name} (Lv.{merc.level})
-            </button>
-          ))}
-          {idleMercs.length === 0 && <p className="status-note">All mercenaries are busy.</p>}
+  const internalClaim = async () => {
+    const result = await onClaim(); 
+    // result returns { success: bool, name: string } from App.jsx
+    if (result?.success) {
+      // Re-fetch logs from DB immediately after claiming to show the new result
+      fetchLogs();
+    }
+  };
+
+  return (
+    <div className="exploration-view-wrapper">
+      {showLogs ? (
+        <div className="logs-container">
+          <h3>RECENT EXPEDITIONS</h3>
+          <div className="logs-list">
+            {logs.length > 0 ? logs.map((log, i) => (
+              <div key={i} className="log-item">
+                <span>{new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className={log.item_name === "Nothing" ? "log-empty" : "log-gain"}>
+                  {log.item_name}
+                </span>
+              </div>
+            )) : <p>No records found.</p>}
+          </div>
+          <button className="close-logs-btn" onClick={() => setShowLogs(false)}>BACK</button>
         </div>
-      </div>
-    );
-  }
-
-  // --- VIEW: TICKET SELECTION ---
-  if (view === 'ticket-select') {
-    return (
-      <div className="arena-content-view">
-        <h2 className="arena-title">SELECT SCROLL</h2>
-        <div className="arena-menu">
-          <button className="arena-menu-btn" onClick={() => onStartExploration(selectedMerc.id, 'basic')}>
-            Basic Scroll (10m)
-          </button>
-          <button className="arena-menu-btn" onClick={() => onStartExploration(selectedMerc.id, 'premium')}>
-            Premium Scroll (20m)
-          </button>
-        </div>
-        <button className="cancel-btn" onClick={() => setView('merc-select')}>BACK</button>
-      </div>
-    );
-  }
-
-  // --- VIEW: TIMER / INSTANT FINISH / CLAIM ---
-  if (view === 'timer') {
-    return (
-      <div className="arena-content-view">
-        <h2 className="loading-text">{isComplete ? "MISSION COMPLETE" : "EXPLORING..."}</h2>
-        <div className="timer-box">
-          <p className="timer-display">{timeLeft}</p>
-        </div>
-
-        <div className="action-column" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
-          {isComplete ? (
-            <button className="confirm-btn claim-animation" onClick={onClaimRewards}>
-              CLAIM REWARDS
-            </button>
+      ) : (
+        <>
+          {!userData?.exploration_end_time ? (
+            <div className="exploration-button-stack">
+              <button className="exp-btn short" onClick={() => onStart('basic')}>
+                Short Exploration
+              </button>
+              <button className="exp-btn long" onClick={() => onStart('premium')}>
+                Long Exploration
+              </button>
+              <button className="view-logs-btn" onClick={() => { fetchLogs(); setShowLogs(true); }}>
+                📜 View Logs
+              </button>
+            </div>
           ) : (
-            <button className="confirm-btn ad-btn" onClick={onInstantFinish}>
-              INSTANT FINISH (WATCH AD)
-            </button>
+            <div className="exploration-timer-stack">
+              {timeLeft > 0 ? (
+                <div className="timer-countdown">{formatTime(timeLeft)}</div>
+              ) : (
+                <button className="exp-claim-btn" onClick={internalClaim}>
+                  CLAIM REWARDS
+                </button>
+              )}
+            </div>
           )}
-          <button className="cancel-btn" onClick={() => setView('menu')}>EXIT</button>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Exploration;

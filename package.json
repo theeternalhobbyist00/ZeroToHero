@@ -13,6 +13,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.95.3",
     "@tonconnect/ui-react": "^2.0.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

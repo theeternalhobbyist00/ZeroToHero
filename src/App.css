@@ -231,7 +231,7 @@
   justify-content: flex-start;
   gap: 20px;
   padding: 15px 25px;
-  background: black;
+  background: white;
   border: 3px solid black;
   border-radius: 15px;
   font-weight: 900;
@@ -454,36 +454,48 @@
 }
 
 .player-rank-card {
-  background: gold;
-  padding: 10px;
-  border: 2px solid black;
-  border-radius: 8px;
-  text-align: center;
-  margin-bottom: 15px;
-  box-shadow: 2px 2px 0px black;
+  background: rgba(46, 204, 113, 0.15);
+  border: 1px solid #2ecc71;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
 }
 
-.rank-list {
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid black;
-  border-radius: 4px;
+.rank-info-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.rank-header, .rank-item {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1.5fr;
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
-  font-size: 0.8rem;
+.estimated-reward {
+  color: #f1c40f;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.rank-reward {
+  color: #2ecc71;
+  font-weight: bold;
+  font-family: monospace;
+  text-align: right;
 }
 
 .rank-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  padding: 10px;
+  opacity: 0.6;
+  font-size: 0.8rem;
   font-weight: bold;
-  background: #eee;
 }
 
-.rank-num { font-weight: bold; }
-.rank-power { color: #d32f2f; text-align: right; }
+.rank-item {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
 
 .merc-list-wrapper {
   display: flex;
@@ -585,33 +597,518 @@
 }
 
 .shop-items-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 60vh;
-  overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr; /* Stacked for mobile */
+    gap: 8px;
+    padding: 10px;
 }
 
 .shop-item-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+    display: flex;
+    flex-direction: row; /* Horizontal alignment */
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 6px 12px;
+    border-radius: 12px;
+    height: 70px; /* Fixed height to keep it consistent */
 }
 
 .item-icon { font-size: 2rem; }
 .item-details { flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
 .item-name { font-weight: bold; color: white; }
 
+/* Shrink the image wrapper */
+.item-image-wrapper {
+    width: 45px;  /* Reduced from 60px */
+    height: 45px; /* Reduced from 60px */
+    flex-shrink: 0; /* Prevents image from squishing */
+    margin-right: 12px;
+}
+
+.item-asset {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Name and Button alignment */
+.item-details {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    max-width: 120px;
+    line-height: 1.2;
+}
+
 .purchase-btn {
-  background: #2e7d32;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-width: 90px;
+}
+
+.stamina-bar-bg {
+    width: 100%;
+    height: 12px;
+    background: #333;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.stamina-bar-fill {
+    height: 100%;
+    background: #00ff88;
+    transition: width 0.3s ease;
+}
+
+.stamina-labels {
+    display: flex;
+    justify-content: space-between; /* This pushes one to the left, one to the right */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px; /* Adds a tiny bit of space above the bar */
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Optional: Add a little color to the numbers to make them pop */
+.stamina-labels span:last-child {
+    color: black; 
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 boxes per row */
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.inventory-slot {
+    aspect-ratio: 1 / 1;
+    background: rgba(255, 255, 255, 0.05); /* Slight fill */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* THE GRID LINES */
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text-danger {
+    color: #ff4444; /* Highlight if stamina exceeds 20 */
+}
+
+.menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.2s;
+}
+
+.menu-item:active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.season-highlight {
+    border-color: #ffd700; /* Gold border for Season rewards */
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0));
+}
+
+.menu-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-text small {
+    color: #ffd700;
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+.menu-arrow {
+    font-size: 1.2rem;
+}
+
+.scroll-icon {
+  width: 45px;  /* Reduced from 60px */
+  height: 45px;
+  margin-bottom: 8px;
+  object-fit: contain;
+  /* Optimization: prevents layout shift */
+  aspect-ratio: 1 / 1; 
+}
+
+.mission-card {
+  width: 160px; /* Slimmed down the container */
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* This forces the container to fill the entire overlay area */
+.exploration-view-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+/* Vertically stacks the buttons and centers them */
+.exploration-button-stack, .exploration-timer-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.exp-btn {
+  width: 80%;
+  max-width: 300px;
+  padding: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 15px;
+  border: 2px solid rgba(255,255,255,0.2);
+  color: black;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.exp-btn.short { background: whitesmoke; }
+.exp-btn.long { background: whitesmoke; }
+
+.timer-countdown {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255,255,255,0.5);
+}
+
+.exp-claim-btn {
+  padding: 20px 50px;
+  background: #27ae60;
   color: white;
   border: none;
-  padding: 8px;
-  border-radius: 4px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1.3rem;
+  box-shadow: 0 0 15px #27ae60;
+}
+
+/* Container for items in the Inventory/Profile grid */
+.inventory-slot img {
+  width: 100%;
+  height: 100%;
+  max-width: 50px;  /* Limits the size regardless of source resolution */
+  max-height: 50px;
+  object-fit: contain; /* Shrinks the image to fit without cropping */
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); /* Adds depth */
+}
+
+/* If you use a reward popup/alert */
+.reward-display-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.view-logs-btn {
+  background: whitesmoke;
+  border: 1px solid white;
+  color: black;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  margin-top: 10px;
   cursor: pointer;
+}
+
+.logs-container {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 20px;
+  border-radius: 15px;
+  width: 80%;
+  text-align: center;
+}
+
+.log-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-family: monospace;
+}
+
+.log-gain { color: #2ecc71; font-weight: bold; }
+.log-empty { color: #95a5a6; }
+
+.close-logs-btn {
+  margin-top: 20px;
+  background: #7f8c8d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.live-dot {
+  height: 8px;
+  width: 8px;
+  background-color: #2ecc71;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  box-shadow: 0 0 8px #2ecc71;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.label-with-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-indicator {
+  background: #e74c3c;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  animation: pulse-red 2s infinite;
+}
+
+.prize-amount {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #f1c40f;
+  text-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+  margin-top: 4px;
+}
+
+.currency-unit {
+  font-size: 0.8rem;
+  color: #fff;
+  opacity: 0.7;
+}
+
+.menu-icon-gold {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 5px rgba(241, 196, 15, 0.5));
+}
+
+@keyframes pulse-red {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.load-more-btn {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  color: #fff;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.load-more-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.merc-image-container {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.merc-asset {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* This prevents stretching */
+}
+
+/* Container for the 3 main stats */
+.merc-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Individual Stat Row (Label on left, Value on right) */
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #bdc3c7;
+  font-family: 'Courier New', Courier, monospace; /* For a "Game Data" feel */
+}
+
+.stat-row span:last-child {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* Activity Status Styling */
+.merc-activity {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.status-label {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Status Color Coding */
+.status-label.idle {
+  background-color: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+  border: 1px solid #2ecc71;
+}
+
+.status-label.training {
+  background-color: rgba(241, 196, 15, 0.2);
+  color: #f1c40f;
+  border: 1px solid #f1c40f;
+}
+
+.status-label.exploring {
+  background-color: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+  border: 1px solid #3498db;
+}
+
+.status-label.active {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+
+/* Dismiss Button Styling */
+.merc-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.dismiss-btn {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.dismiss-btn:hover {
+  background: #e74c3c;
+  color: white;
+}
+
+/* Training Dust Icon Constraints */
+/* Use this class when rendering powder.png in the inventory */
+.dust-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+}
+
+/* Ensure inventory slots don't blow up the icon size */
+.inventory-slot img[src*="powder.png"] {
+  max-width: 32px;
+  max-height: 32px;
+}
+
+.resource-check {
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.text-red { color: #e74c3c; font-weight: bold; }
+.text-green { color: #2ecc71; font-weight: bold; }
+
+.stat-btn {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  width: 100%;
+  margin-bottom: 10px;
+  background: #2c3e50;
+  border: 2px solid #34495e;
+  border-radius: 8px;
+  color: white;
+}
+
+.stat-btn:disabled {
+  opacity: 0.6;
+  filter: grayscale(1);
+}
+
+.btn-cost {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-top: 5px;
+  color: #bdc3c7;
 }
